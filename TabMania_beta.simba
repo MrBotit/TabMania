@@ -1,0 +1,50 @@
+program Template;
+{$DEFINE SMART}
+{$i Reflection/Reflection.simba}
+{$i Update.simba}
+
+var
+  MyPlayer : TReflectLocalPlayer;
+  {* SETUP VARIABLES *}
+  accNum, user, pass, breakMin, breakMax, tabAmount : String;
+
+const
+  VERSION = 2;
+  accPath = 'C:\Simba\Scripts\TabMania\Config\Accounts.ini';
+  cfgPath = 'C:\Simba\Scripts\TabMania\Config\Script_settings.ini';
+
+procedure get_Config;
+begin
+  Writeln('Reading config file.');
+  accNum := ReadIni('Account', 'Num', cfgPath); //READ ACC NUMBER
+  if (accNum = '') then
+  begin
+    Writeln('Failed to read account number or no account number set!');
+    TerminateScript;
+  end;
+  breakMin := ReadIni('Breaks', 'Min', cfgPath); //READ MIN. BRAKE
+  breakMax := ReadIni('Breaks', 'Max', cfgPath); //READ MAX. BRAKE
+  tabAmount := ReadIni('Tabs', 'Amount', cfgPath); //READ TAB AMOUNT
+
+  Writeln('Reading account file.');
+  user := ReadIni(accNum, 'User', accPath); //READ USERNAME
+  pass := ReadIni(accNum, 'Pass', accPath); //READ PASSWORD
+  if (user = '') or (pass = '') then
+  begin
+    Writeln('Username and/or password not set or failed to read!');
+    TerminateScript;
+  end;
+
+  MyPlayer.Username := user;
+  MyPlayer.Password := pass;
+  MyPlayer.Active := True;
+
+  Writeln('Account selected: #', accNum, ' ', user);
+  Writeln('Break time: Min. -> ', breakMin, 's | Max. -> ', breakMax, 's');
+end;
+
+
+begin
+  Reflect.Setup;
+  get_Config;
+end.
